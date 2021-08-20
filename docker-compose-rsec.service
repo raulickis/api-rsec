@@ -1,0 +1,17 @@
+# /etc/systemd/system/docker-compose-app.service
+
+[Unit]
+Description=Docker Compose RSEC Application Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/td/rsec/api-rsec
+ExecStart=/usr/bin/docker-compose up -d
+ExecStop=/usr/bin/docker-compose down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

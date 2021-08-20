@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: rsec-postgres-pv
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rsec-postgres-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 90Mi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rsec-postgres-config
+  labels:
+    app: rsec-postgres
+data:
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: "1234"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rsec-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rsec-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rsec-postgres
+    spec:
+      containers:
+        - name: rsec-postgres
+          image: postgres:10.12-alpine
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: rsec-postgres-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgredb
+      volumes:
+        - name: postgredb
+          persistentVolumeClaim:
+            claimName: rsec-postgres-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rsec-postgres
+  labels:
+    app: rsec-postgres
+spec:
+  type: NodePort
+  ports:
+    - port: 5432
+  selector:
+    app.kubernetes.io/name: rsec-postgres

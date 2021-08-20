@@ -1,0 +1,25 @@
+version: '3.5'
+services:
+
+  postgres:
+    container_name: postgres
+    image: postgres:10.12-alpine
+    extra_hosts:
+      - "host.docker.internal:${DOCKER_HOST_IP}"
+    volumes:
+      - ../database:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=1234
+
+  api-rsec:
+    container_name: api-rsec
+    image: raulickis/api-rsec:latest
+    restart: on-failure
+    extra_hosts:
+      - "host.docker.internal:${DOCKER_HOST_IP}"
+    ports:
+      - '9991:9991'
+    env_file:
+      - .env

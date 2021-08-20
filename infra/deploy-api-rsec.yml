@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-rsec
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: api-rsec
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: api-rsec
+    spec:
+      containers:
+        - name: api-rsec
+          image: raulickis/api-rsec:latest
+          # imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9990
+          livenessProbe:
+            httpGet:
+              path: /health/check
+              port: 9990
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 10
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health/check
+              port: 9990
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 10
+            successThreshold: 1
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "300m"
+              memory: "100Mi"
+          envFrom:
+            - configMapRef:
+                name: api-rsec-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-rsec
+spec:
+  type: NodePort
+  ports:
+    - port: 9990
+      targetPort: 9990
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: api-rsec

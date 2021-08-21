@@ -17,6 +17,10 @@ services:
     container_name: api-rsec
     image: raulickis/api-rsec:latest
     restart: on-failure
+    depends_on:
+      - postgres
+    links:
+      - "postgres"
     extra_hosts:
       - "host.docker.internal:${DOCKER_HOST_IP}"
     ports:

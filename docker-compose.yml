@@ -24,6 +24,6 @@ services:
     extra_hosts:
       - "host.docker.internal:${DOCKER_HOST_IP}"
     ports:
-      - '9991:9991'
+      - '9990:9990'
     env_file:
       - .env

@@ -17,5 +17,6 @@ var (
 	DB_USER                  = os.Getenv("DB_USER")
 	DB_PASS                  = os.Getenv("DB_PASS")
 	DB_PORT, _               = strconv.Atoi(os.Getenv("DB_PORT"))
+	TOKEN                    = os.Getenv("TOKEN")
 
 )

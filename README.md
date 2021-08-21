@@ -40,11 +40,29 @@ docker-compose up
 
 1 - (Opcional) Para fazer um teste rápido, executar o comando **curl** abaixo:
 ```
-curl http://localhost:9990/cadastro/usuario
+curl http://localhost:9990/cadastro/usuario -H 'token: ZjFhNTUyZmI2YjYzNDI0ZmRmNDUzZDAx' 
 ```
 
 2 - Importar no Postman o arquivo **rsec.postman_collection.json**
 
 3 - Executar os endpoints para cadastro de usuarios e enderecos
 
+
+## Servidor WEB
+
+Auto-iniciar o docker-compose com o Linux:
+```
+sudo cp docker-compose-rsec.service /etc/systemd/system/docker-compose-rsec.service
+sudo systemctl enable docker-compose-rsec
+sudo systemctl start docker-compose-rsec
+sudo systemctl status docker-compose-rsec
+```
+ 
+Como configurar o Nginx de um servidor para redirecionar para a api:
+```
+location /rsec {
+    rewrite ^/rsec(.*) $1 break;
+    proxy_pass http://127.0.0.1:9990;
+}
+```
 

@@ -64,5 +64,9 @@ location /rsec {
     rewrite ^/rsec(.*) $1 break;
     proxy_pass http://127.0.0.1:9990;
 }
+location /rsec/ws {
+    rewrite ^/rsec/ws(.*) $1 break;
+    proxy_pass http://127.0.0.1:7999;
+}
 ```
 

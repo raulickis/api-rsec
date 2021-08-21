@@ -27,3 +27,15 @@ services:
       - '9990:9990'
     env_file:
       - .env
+
+  pushpin:
+    container_name: pushpin
+    image: fanout/pushpin
+    links:
+      - "api-rsec"
+    ports:
+      - 7999:7999
+      - 5561:5561
+    extra_hosts:
+      - "host.docker.internal:$DOCKER_HOST_IP"
+    command: /usr/bin/pushpin --merge-output --route="* api-rsec:9990,over_http"
